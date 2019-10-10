@@ -12,4 +12,5 @@ public interface EmployeeRepository extends JpaRepository<Employee,Integer>
     public List<Employee> findAllByParentIdAndEmpIdIsNot(int parentId,Integer empName);
     public List<Employee> findAllByParentId(Integer eid);
     public Employee findByParentId(Integer parentId);
+    public List<Employee> findAllByParentIdOrderByDesignation_levelAsc(Integer pid);
 }

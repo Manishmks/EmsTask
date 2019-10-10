@@ -3,9 +3,8 @@ package emstask.spring.controller;
 
 import emstask.spring.dao.DesignationRepository;
 import emstask.spring.dao.EmployeeRepository;
-import emstask.spring.model.Designation;
-import emstask.spring.model.Employee;
 import emstask.spring.model.EmployeePost;
+import emstask.spring.model.EmployeePut;
 import emstask.spring.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,27 +36,15 @@ public class EmployeeController
          return empService.addUser(employee);
     }
 
-
     @GetMapping("/employees/{aid}")
     public ResponseEntity getEmployee(@PathVariable("aid") Integer aid)
     {
-        boolean userExists=empService.userExists(aid);
-        if(userExists)
-        {
-            Map<String,Object> map=empService.getUserDetails(aid);
-            return new ResponseEntity<>(map,HttpStatus.OK);
-        }
-        else
-        {
-            return new ResponseEntity<>("Employee does't exists",HttpStatus.BAD_REQUEST);
-        }
+       return empService.getUserDetails(aid);
     }
 
     @PutMapping("/employees/{empId}")
-    public String updateEmployee(@PathVariable("empId") int empId,@RequestBody EmployeePost emp)
-    {
-        empService.updateUser(empId,emp);
-        return null;
+    public ResponseEntity updateEmployee(@PathVariable("empId") int empId,@RequestBody EmployeePut emp) throws Exception {
+        return empService.updateUser(empId,emp);
     }
 
     @DeleteMapping("/employees/{eid}")
