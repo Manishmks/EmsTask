@@ -19,14 +19,6 @@ public class MessageUtil implements MessageSourceAware
     {
         return  this.getMessage(tag,null);
     }
-    public String getMessage(String tag,Object param)
-    {
-        return this.getMessage(tag,new Object[]{param});
-    }
-    public String getMessage(String tag,Object param,Object param2)
-    {
-        return this.getMessage(tag,new Object[]{param,param2});
-    }
     public String getMessage(String tag,Object params[])
     {
         return  source.getMessage(tag,params, Locale.US);

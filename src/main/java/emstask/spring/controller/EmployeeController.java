@@ -1,6 +1,7 @@
 package emstask.spring.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import emstask.spring.dao.DesignationRepository;
 import emstask.spring.dao.EmployeeRepository;
 import emstask.spring.model.EmployeePost;
@@ -37,8 +38,7 @@ public class EmployeeController
     }
 
     @GetMapping("/employees/{aid}")
-    public ResponseEntity getEmployee(@PathVariable("aid") Integer aid)
-    {
+    public ResponseEntity getEmployee(@PathVariable("aid") Integer aid) throws JsonProcessingException {
        return empService.getUserDetails(aid);
     }
 
@@ -50,7 +50,6 @@ public class EmployeeController
     @DeleteMapping("/employees/{eid}")
     public ResponseEntity deleteEmployee(@PathVariable("eid") int eid)
     {
-        ResponseEntity entity=empService.deleteUser(eid);
-        return entity;
+        return  empService.deleteUser(eid);
     }
 }

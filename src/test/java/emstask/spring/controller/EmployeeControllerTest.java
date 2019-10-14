@@ -1,18 +1,13 @@
 package emstask.spring.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import emstask.spring.Application;
-import emstask.spring.model.Employee;
 import emstask.spring.model.EmployeePost;
 import emstask.spring.model.EmployeePut;
-import org.hamcrest.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,11 +20,9 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import static emstask.spring.ResultMessages.*;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.testng.Assert.*;
 
 @EnableWebMvc
 @WebAppConfiguration
@@ -64,10 +57,9 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
     public void getUserTest() throws Exception
     {
         MvcResult result=mvc.perform(MockMvcRequestBuilders.get("/rest/employees/1"))
-                .andExpect(MockMvcResultMatchers.status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andDo(print()).andReturn();
+                .andExpect(MockMvcResultMatchers.status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andReturn();
         String jsonOutput=result.getResponse().getContentAsString();
         int length= JsonPath.parse(jsonOutput).read("$.length()");
-        System.out.println(length);
         Assert.assertTrue(length>0);
 
     }
@@ -76,13 +68,13 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
     public void getUserTestInvalidParent() throws Exception
     {
         MvcResult result=mvc.perform(MockMvcRequestBuilders.get("/rest/employees/11"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound()).andDo(print()).andReturn();
+                .andExpect(MockMvcResultMatchers.status().isNotFound()).andReturn();
     }
 
     @Test(priority = 4)
     public void getUserTestNullParent() throws Exception {
         MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/rest/employees/null"))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andDo(print()).andReturn();
+                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
     }
 
     //*******************************************************Test for Put Replace*******************************************************************
@@ -92,7 +84,7 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
         EmployeePut employeePut=new EmployeePut("","",null,true);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employeePut);
-        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/3").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print())
+        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/3").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
     }
     @Test
@@ -101,52 +93,52 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
         EmployeePut employeePut=new EmployeePut("Captain Marvel","",null,true);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employeePut);
-        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/3").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print())
+        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/3").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
     }
     @Test
     public void putEmpWithDemotion() throws Exception
     {
-        EmployeePut employeePut=new EmployeePut("Captain Marvel","intern",null,true);
+        EmployeePut employeePut=new EmployeePut("Captain Marvel","Intern",null,true);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employeePut);
-        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/3").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print())
+        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/3").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
     }
     @Test
     public void putEmpWithDemotionPossible() throws Exception
     {
-        EmployeePut employeePut=new EmployeePut("Captain Marvel","lead",null,true);
+        EmployeePut employeePut=new EmployeePut("Captain Marvel","Lead",null,true);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employeePut);
-        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/2").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print())
+        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/2").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
     }
     @Test
     public void putEmpWithPromotionPossible() throws Exception
     {
-        EmployeePut employeePut=new EmployeePut("Captain Marvel","manager",null,true);
+        EmployeePut employeePut=new EmployeePut("Captain Marvel","Manager",null,true);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employeePut);
-        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/3").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print())
+        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/3").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
     }
     @Test
     public void putEmpWithPromotion() throws Exception
     {
-        EmployeePut employeePut=new EmployeePut("Captain Marvel","director",null,true);
+        EmployeePut employeePut=new EmployeePut("Captain Marvel","Director",null,true);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employeePut);
-        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/2").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print())
+        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/2").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
     }
     @Test
     public void replaceWithDirector() throws Exception
     {
-        EmployeePut employeePut=new EmployeePut("Captain Marvel","director",null,true);
+        EmployeePut employeePut=new EmployeePut("Captain Marvel","Director",null,true);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employeePut);
-        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/1").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print())
+        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/1").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
     }
 
@@ -155,17 +147,17 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
     @Test(priority = 0)
     public void createEmployeeTest() throws Exception                //post is working or not
     {
-        EmployeePost employeePost=new EmployeePost("wonder woman","intern",2);
+        EmployeePost employeePost=new EmployeePost("wonder woman","Intern",2);
         ObjectMapper mapper=new ObjectMapper();
         String jsonInput=mapper.writeValueAsString(employeePost);
         MvcResult result=mvc.perform(MockMvcRequestBuilders.post("/rest/employees").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+                .andExpect(MockMvcResultMatchers.status().isCreated()).andReturn();
     }
 
     @Test(priority = 1)
     public void directorValidationForManager() throws Exception                //Assigning director with manager
     {
-        EmployeePost employeePost=new EmployeePost("wonder woman","director",2);
+        EmployeePost employeePost=new EmployeePost("wonder woman","Director",2);
         ObjectMapper mapper=new ObjectMapper();
         String jsonInput=mapper.writeValueAsString(employeePost);
         mvc.perform(MockMvcRequestBuilders.post("/rest//employees").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -175,17 +167,17 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
     @Test
     public void multipleDirector() throws Exception                             //Adding second Director
     {
-        EmployeePost employeePost=new EmployeePost("/rest/wonder woman","director",null);
+        EmployeePost employeePost=new EmployeePost("wonder woman","Director",null);
         ObjectMapper mapper=new ObjectMapper();
         String jsonInput=mapper.writeValueAsString(employeePost);
-        mvc.perform(MockMvcRequestBuilders.post("/rest/employees").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isForbidden()).andReturn();
+        mvc.perform(MockMvcRequestBuilders.post("/rest/employees").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
     }
 
     @Test
     public void noData () throws Exception                //Adding employee with no data
     {
-        EmployeePost employeePost=new EmployeePost();
+        EmployeePost employeePost=new EmployeePost(null,null,null);
         ObjectMapper mapper=new ObjectMapper();
         String jsonInput=mapper.writeValueAsString(employeePost);
         mvc.perform(MockMvcRequestBuilders.post("/rest/employees").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -214,15 +206,15 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
     @Test
     public void hierarchyViolation () throws Exception                //Adding employee with violating organisation hierarchy
     {
-        EmployeePost employeePost=new EmployeePost("wonder woman", "lead",8);
+        EmployeePost employeePost=new EmployeePost("wonder woman", "Lead",8);
         ObjectMapper mapper=new ObjectMapper();
         String jsonInput=mapper.writeValueAsString(employeePost);
         mvc.perform(MockMvcRequestBuilders.post("/rest/employees").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andDo(print()).andReturn();
+                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
 
-        employeePost.setEmpDesg("manager");
+        employeePost.setJobTitle("Manager");
         mvc.perform(MockMvcRequestBuilders.post("/rest/employees").content(mapper.writeValueAsString(employeePost)).contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andDo(print()).andReturn();
+                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
     }
 
     @Test
@@ -248,7 +240,7 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
     public void delDirectorWithChild () throws Exception                //Deleting director with children
     {
         mvc.perform(MockMvcRequestBuilders.delete("/rest/employees/1"))
-                .andExpect(MockMvcResultMatchers.status().isForbidden()).andReturn();
+                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
     }
 
     @Test
@@ -256,7 +248,7 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
     {
 
         mvc.perform(MockMvcRequestBuilders.delete("/rest/employees/1"))
-                .andExpect(MockMvcResultMatchers.status().isForbidden()).andReturn();
+                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
     }
 
     @Test
@@ -275,7 +267,7 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
     @Test
     public void updateEmpInvalidId() throws Exception
     {
-        EmployeePut employee = new EmployeePut("Rajat","manager",2,false);
+        EmployeePut employee = new EmployeePut("Rajat","Manager",2,false);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employee);
         mvc.perform(MockMvcRequestBuilders.put("/rest/employees/13").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -293,7 +285,7 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
     @Test
     public void updateEmpInvalidParId() throws Exception
     {
-        EmployeePut employee = new EmployeePut("Mohit","lead",12343,false);
+        EmployeePut employee = new EmployeePut("Mohit","Lead",12343,false);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employee);
         mvc.perform(MockMvcRequestBuilders.put("/rest/employees/2").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -311,21 +303,21 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
     @Test
     public void updateEmpDemotion() throws Exception
     {
-        EmployeePut employee = new EmployeePut("Mohit","lead",1,false);
+        EmployeePut employee = new EmployeePut("Mohit","Lead",1,false);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employee);
-        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/2").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print())
+        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/2").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
     }
 
     @Test
     public void updateEmpDemoteDirector() throws Exception
     {
-        EmployeePut employee = new EmployeePut(null,"lead",null,false);
+        EmployeePut employee = new EmployeePut(null,"Lead",null,false);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employee);
         mvc.perform(MockMvcRequestBuilders.put("/rest/employees/1").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.status().isForbidden()).andDo(print()).andReturn();
+                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
     }
     @Test
     public void updateEmpDirectorName() throws Exception
@@ -333,13 +325,13 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
         EmployeePut employee = new EmployeePut("Rajat",null,null,false);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employee);
-        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/1").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print())
+        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/1").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
     }
     @Test
     public void updateEmpDirectorWithDirector() throws Exception
     {
-        EmployeePut employee = new EmployeePut(null,"director",null,false);
+        EmployeePut employee = new EmployeePut(null,"Director",null,false);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employee);
         mvc.perform(MockMvcRequestBuilders.put("/rest/employees/1").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -348,11 +340,11 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
     @Test
     public void updateEmpDirectorWithOutDirector() throws Exception
     {
-        EmployeePut employee = new EmployeePut(null,"manager",null,false);
+        EmployeePut employee = new EmployeePut(null,"Manager",null,false);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employee);
         mvc.perform(MockMvcRequestBuilders.put("/rest/employees/1").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.status().isForbidden()).andReturn();
+                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
     }
     @Test
     public void updateEmpDirectorParChange() throws Exception
@@ -369,7 +361,7 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
         EmployeePut employee = new EmployeePut(null,null,4,false);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employee);
-        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/3").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print())
+        mvc.perform(MockMvcRequestBuilders.put("/rest/employees/3").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
     }
 

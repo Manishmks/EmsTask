@@ -1,29 +1,31 @@
 package emstask.spring.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class EmployeePut
 {
     public EmployeePut()
     {
 
     }
-    public EmployeePut(String empName, String empDesg, Integer parentId, boolean replace) {
-        this.empName = empName;
-        this.empDesg = empDesg;
-        this.parentId = parentId;
+    public EmployeePut(String name, String jobTitle, Integer managerId, boolean replace) {
+        this.name = name;
+        this.jobTitle = jobTitle;
+        this.managerId = managerId;
         this.replace = replace;
     }
 
-    String empName=null;
-    String empDesg=null;
-    Integer parentId=null;
+    String name =null;
+    String jobTitle =null;
+    Integer managerId =null;
     boolean replace=false;
 
-    public Integer getParentId() {
-        return parentId;
+    public Integer getManagerId() {
+        return managerId;
     }
 
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
+    public void setManagerId(Integer managerId) {
+        this.managerId = managerId;
     }
 
     public boolean isReplace() {
@@ -34,20 +36,20 @@ public class EmployeePut
         this.replace = replace;
     }
 
-    public String getEmpName()
+    public String getName()
     {
-        return empName;
+        return name;
     }
 
-    public void setEmpName(String empName) {
-        this.empName = empName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getEmpDesg() {
-        return empDesg;
+    public String getJobTitle() {
+        return jobTitle;
     }
 
-    public void setEmpDesg(String empDesg) {
-        this.empDesg = empDesg;
+    public void setJobTitle(String jobTitle) {
+        this.jobTitle = jobTitle;
     }
 }

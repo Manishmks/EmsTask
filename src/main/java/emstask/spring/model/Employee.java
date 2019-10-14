@@ -1,5 +1,6 @@
 package emstask.spring.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -11,9 +12,11 @@ public class Employee
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("id")
     int empId;
 
     @Transient
+    @JsonProperty("jobTitle")
     String desgName;
 
     @OneToOne
@@ -33,6 +36,7 @@ public class Employee
     @Column(nullable = true)
     private Integer parentId;
 
+    @JsonProperty("name")
     String empName;
 
     public Employee(Designation designation, Integer parentId, String empName)

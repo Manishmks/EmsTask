@@ -1,178 +1,63 @@
 package emstask.spring.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import emstask.spring.ResultMessages;
 import emstask.spring.dao.DesignationRepository;
 import emstask.spring.dao.EmployeeRepository;
 import emstask.spring.model.*;
+import emstask.spring.util.EmployeeUtil;
 import emstask.spring.util.MessageUtil;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import static emstask.spring.ResultMessages.*;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-class EmployeeUtil
+@Service
+public class EmployeeService extends EmployeeUtil
 {
     @Autowired
     EmployeeRepository empRepo;
     @Autowired
     DesignationRepository degRepo;
 
-    public boolean isGreaterThanEqualCurrentDesignation(Integer eid,String desg)
-    {
-        Employee employee=empRepo.findByEmpId(eid);
-        float selfLevel=employee.getDesignation().getLevel();
-        float parentLevel=degRepo.findByDesgName(desg).getLevel();
-        if(selfLevel>=parentLevel)
-            return true;
-        else
-            return false;
-    }
-
-    public boolean isSmallerThanParent(Integer eid,String desg)
-    {
-        Employee employee=empRepo.findByEmpId(eid);
-        if(employee.getParentId()!=null)
-        {
-            float parentLevel=empRepo.findByEmpId(employee.getParentId()).getDesignation().getLevel();
-            float selfLevel=degRepo.findByDesgName(desg).getLevel();
-            if(selfLevel>parentLevel)
-                return true;
-            else
-                return false;
-        }
-        else
-            return true;
-    }
-
-    public boolean isGreaterThanChilds(Integer eid,String desg)
-    {
-        float selfLevel=degRepo.findByDesgName(desg).getLevel();
-        List<Employee> list=empRepo.findAllByParentIdOrderByDesignation_levelAsc(eid);
-        if(list.size()>0)
-        {
-            float childLevel=list.get(0).getDesignation().getLevel();
-            if(selfLevel<childLevel)
-                return true;
-            else
-                return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
-    public boolean isGreaterThanCurrentDesignation(Integer eid,String desg)
-    {
-        Employee employee=empRepo.findByEmpId(eid);
-        float selfLevel=employee.getDesignation().getLevel();
-        float parentLevel=degRepo.findByDesgName(desg).getLevel();
-        if(selfLevel>parentLevel)
-            return true;
-        else
-            return false;
-    }
-
-    public boolean userExists(Integer eid)
-    {
-        Employee emp=empRepo.findByEmpId(eid);
-        if(emp!=null)
-            return true;
-        else
-            return false;
-    }
-
-    public boolean hasData(List<Employee> list)
-    {
-        if(list.size()>0)
-            return true;
-        else
-            return false;
-    }
-
-    public boolean isDesignationValid(String desg)
-    {
-            Designation designation=degRepo.findByDesgName(desg);
-            if(designation!=null)
-                return true;
-            else
-                return false;
-    }
-
-    public boolean isValidName(String name)
-    {
-        if(name!=null)
-        {
-            if(name.trim().equals(""))
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-        else
-        {
-            return false;
-        }
-
-    }
-
-}
-
-@Service
-public class EmployeeService extends EmployeeUtil
-{
     @Autowired
     MessageUtil messageUtil;
+
     public ResponseEntity getUserDetails(Integer eid)
     {
-        Employee manager=null;
-        List<Employee> colleagues=null;
-        Map<String,Object> map=new LinkedHashMap<>();
-
-        boolean userExists;
-        if(eid!=null)
-        {
-            userExists=userExists(eid);
+        Employee manager;
+        List<Employee> colleagues;
+        Map<String, Object> map = new LinkedHashMap<>();
+        boolean userExists = false;
+        if (eid != null && eid > 0) {
+            userExists = userExists(eid);
+        } else if (eid < 0) {
+            return new ResponseEntity<>(messageUtil.getMessage("INVALID_ID"),HttpStatus.BAD_REQUEST);
         }
-        else
-        {
-            return new ResponseEntity(INVALID_PARENT,HttpStatus.BAD_REQUEST);
-        }
-        if(userExists) {
-            Employee emp = empRepo.findByEmpId(eid);
-
+            if (userExists) {
+                Employee emp = empRepo.findByEmpId(eid);
+                map.put("id", emp.getEmpId());
+                map.put("name", emp.getEmpName());
+                map.put("jobTitle", emp.getDesgName());
             map.put("Employee", emp);
 
-            if (emp.getParentId() != null) {
-                manager = empRepo.findByEmpId(emp.getParentId());
-                map.put("Manager", manager);
+                if (emp.getParentId() != null) {
+                    manager = empRepo.findByEmpId(emp.getParentId());
+                    map.put("manager", manager);
+                    colleagues = empRepo.findAllByParentIdAndEmpIdIsNotOrderByDesignation_levelAscEmpNameAsc(emp.getParentId(), emp.getEmpId());
+                    map.put("colleagues", colleagues);
+                }
 
-                colleagues = empRepo.findAllByParentIdAndEmpIdIsNot(emp.getParentId(), emp.getEmpId());
-                map.put("Colleagues", colleagues);
+                List<Employee> reporting = empRepo.findAllByParentIdAndEmpIdIsNotOrderByDesignation_levelAscEmpNameAsc(emp.getEmpId(), emp.getEmpId());
+                if (reporting.size() != 0)
+                    map.put("subordinates", reporting);
+
+            return new ResponseEntity<>(map, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(messageUtil.getMessage("EMP_NOT_EXISTS"),HttpStatus.NOT_FOUND);
             }
-
-            List<Employee> reporting = empRepo.findAllByParentIdAndEmpIdIsNot(emp.getEmpId(), emp.getEmpId());
-            if (reporting.size() != 0)
-                map.put("Reporting To", reporting);
-
-            return new ResponseEntity(map, HttpStatus.OK);
-        }
-        else
-            {
-            return new ResponseEntity(PARENT_NOT_EXISTS,HttpStatus.NOT_FOUND);
-        }
-        }
+    }
 
     public ResponseEntity getAll()
     {
@@ -180,28 +65,33 @@ public class EmployeeService extends EmployeeUtil
             if(hasData(list))
                 return new ResponseEntity<>(list, HttpStatus.OK);
             else
-                return new ResponseEntity<>("No Records Found",HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(messageUtil.getMessage("NO_DATA_FOUND"),HttpStatus.BAD_REQUEST);
         }
 
     public ResponseEntity deleteUser(Integer eid)
     {
+        if(eid<0)
+        {
+            return new ResponseEntity("INVALID_ID",HttpStatus.BAD_REQUEST);
+        }
+
             boolean userExists=userExists(eid);
             if(userExists)
             {
                 Employee emp=empRepo.findByEmpId(eid);
-                if(emp.getDesgName().equals("director"))
+                if(emp.getDesgName().equals("Director"))
                 {
                     List<Employee> list=empRepo.findAllByParentId(emp.getEmpId());
                     if(hasData(list))
                     {
                         // Not able to delete
-                        return new ResponseEntity("Director having childs cannot be deleted",HttpStatus.FORBIDDEN);
+                        return new ResponseEntity<>(messageUtil.getMessage("UNABLE_TO_DELETE_DIRECTOR"),HttpStatus.BAD_REQUEST);
                     }
                     else
                     {
                         //Able to delete
                         empRepo.delete(emp);
-                        return new ResponseEntity("Deleted Successfully",HttpStatus.OK);
+                        return new ResponseEntity<>(messageUtil.getMessage("DELETED"),HttpStatus.NO_CONTENT);
                     }
                 }
                 else
@@ -214,58 +104,66 @@ public class EmployeeService extends EmployeeUtil
                         empRepo.save(employee);
                     }
                     empRepo.delete(emp);
-                    return new ResponseEntity("Deleted Successfully",HttpStatus.OK);
+                    return new ResponseEntity<>(messageUtil.getMessage("DELETED"),HttpStatus.NO_CONTENT);
                 }
             }
             else
             {
-                return new ResponseEntity("Employee Does't Exists",HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(messageUtil.getMessage("EMP_NOT_EXISTS"),HttpStatus.NOT_FOUND);
             }
         }
 
     public ResponseEntity addUser(EmployeePost employee)
     {
-        String empName=employee.getEmpName();
-        String desg=employee.getEmpDesg();
-        Integer parentId=employee.getParentId();
+        String empName=employee.getName();
+        String desg=employee.getJobTitle();
+        Integer parentId=employee.getManagerId();
+        if(parentId!=null)
+        {
+            if(parentId.intValue()<0)
+            {
+                parentId=null;
+            }
+        }
+
         if(empName==null && desg==null && parentId==null)
         {
-            return new ResponseEntity("No Data",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(messageUtil.getMessage("INSUFFICIENT_DATA"),HttpStatus.BAD_REQUEST);
         }
 
         if(desg!=null)
         {
             if(!isDesignationValid(desg))
             {
-                return new ResponseEntity("Please Enter Valid Designation", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(messageUtil.getMessage("INVALID_DESIGNATION"), HttpStatus.BAD_REQUEST);
             }
         }
         else
         {
-            return new ResponseEntity("Designation cannot be NULL", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(messageUtil.getMessage("NULL_DESIGNATION"), HttpStatus.BAD_REQUEST);
         }
 
         if(!isValidName(empName))
         {
-            return new ResponseEntity("Please enter a valid name", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(messageUtil.getMessage("INVALID_EMP_NAME"), HttpStatus.BAD_REQUEST);
         }
-        if(parentId==null) {
+        if(parentId==null ) {
             Employee director = empRepo.findByParentId(null);
             if (director != null) {
-                return new ResponseEntity("Director Already Exists ParentId cannot be NULL", HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(messageUtil.getMessage("DIRECTOR_EXISTS"), HttpStatus.BAD_REQUEST);
             }
             else
             {
-                if(desg.equals("director"))
+                if(desg.equals("Director"))
                 {
                     Designation designation=degRepo.findByDesgName(desg);
                     Employee emp=new Employee(designation,parentId,empName);
                     empRepo.save(emp);
-                    return new ResponseEntity(messageUtil.getMessage("msg1","Hello"),HttpStatus.OK);
+                    return new ResponseEntity<>(emp,HttpStatus.CREATED);
                 }
                 else
                 {
-                    return new ResponseEntity("No Director found! Please Add Director First",HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(messageUtil.getMessage("NO_DIRECTOR_EXISTS"),HttpStatus.BAD_REQUEST);
                 }
 
             }
@@ -275,12 +173,11 @@ public class EmployeeService extends EmployeeUtil
             Employee parent=empRepo.findByEmpId(parentId);
             if(parent==null)
             {
-                return new ResponseEntity("Parent Does't Exists", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(messageUtil.getMessage("PARENT_NOT_EXISTS"), HttpStatus.BAD_REQUEST);
             }
             else
             {
                 Designation designation=degRepo.findByDesgName(desg);
-                System.out.println(desg);
                 float currentLevel=designation.getLevel();
 
                 Employee parentRecord=empRepo.findByEmpId(parentId);
@@ -290,37 +187,52 @@ public class EmployeeService extends EmployeeUtil
                 {
                     Employee emp=new Employee(designation,parentId,empName);
                     empRepo.save(emp);
-                    return new ResponseEntity(messageUtil.getMessage("msg1","Manish"),HttpStatus.OK);
+                    return new ResponseEntity<>(emp,HttpStatus.CREATED);
                 }
                 else
                 {
-                    return new ResponseEntity(INVALID_PARENT,HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(messageUtil.getMessage("INVALID_PARENT"),HttpStatus.BAD_REQUEST);
                     //desg+" cannot be child of "+parentRecord.getDesgName()
                 }
             }
         }
     }
 
-    public ResponseEntity updateUser(int eid, EmployeePut emp) throws Exception {
-        //User Exists
+    public ResponseEntity updateUser(int eid, EmployeePut emp) throws Exception
+    {
+        if(eid<0)
+        {
+            return new ResponseEntity("INVALID_ID",HttpStatus.BAD_REQUEST);
+        }
+        if(emp.getName()==null && emp.getManagerId()==null && emp.getJobTitle()==null)
+        {
+            return new ResponseEntity("NO DATA",HttpStatus.BAD_REQUEST);
+        }
+        if(emp.getManagerId()!=null)
+        {
+            if(!isValidId(emp.getManagerId()))
+            {
+                return new ResponseEntity("INVALID_MANAGER",HttpStatus.BAD_REQUEST);
+            }
+        }
         if(userExists(eid))
         {
             String userDesignation;
 
             if(emp.isReplace())
             {
-                userDesignation=emp.getEmpDesg();
+                userDesignation=emp.getJobTitle();
                 if(userDesignation==null) {
-                    return new ResponseEntity("Designation cannot be NULL", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(messageUtil.getMessage("NULL_DESIGNATION"), HttpStatus.BAD_REQUEST);
                 }
                 else
                 {
                     if (!isDesignationValid(userDesignation))
-                        return new ResponseEntity<>("Designation does't exists! Please enter valid designation",HttpStatus.BAD_REQUEST);
+                        return new ResponseEntity<>(messageUtil.getMessage("INVALID_DESIGNATION"),HttpStatus.BAD_REQUEST);
                 }
-                if(!isValidName(emp.getEmpName()))
+                if(!isValidName(emp.getName()))
                 {
-                    return new ResponseEntity("Please enter a valid name", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(messageUtil.getMessage("INVALID_EMP_NAME"), HttpStatus.BAD_REQUEST);
                 }
                     Integer parent=null;
                     Employee employee=empRepo.findByEmpId(eid);
@@ -328,7 +240,7 @@ public class EmployeeService extends EmployeeUtil
                     {
                         parent=employee.getParentId();
                         empRepo.delete(employee);
-                        Employee tempEmployee=new Employee(degRepo.findByDesgName(userDesignation),parent,emp.getEmpName());
+                        Employee tempEmployee=new Employee(degRepo.findByDesgName(userDesignation),parent,emp.getName());
                         empRepo.save(tempEmployee);
                         List<Employee> list=empRepo.findAllByParentId(eid);
                         for(Employee empTemp:list)
@@ -336,21 +248,24 @@ public class EmployeeService extends EmployeeUtil
                             empTemp.setParentId(tempEmployee.getEmpId());
                             empRepo.save(empTemp);
                         }
-                        return new ResponseEntity("User Replaced",HttpStatus.OK);
+                        return getUserDetails(tempEmployee.getEmpId());
+//                        return new ResponseEntity<>(tempEmployee,HttpStatus.OK);
+//                      return new ResponseEntity<>(getUserDetails(tempEmployee.getEmpId()),HttpStatus.OK);
+
                     }
                     else
-                        return new ResponseEntity(employee.getDesignation().getDesgName()+" cannot be replaced with "+userDesignation,HttpStatus.BAD_REQUEST);
+                        return new ResponseEntity<>(messageUtil.getMessage("INVALID_PARENT"),HttpStatus.BAD_REQUEST);
             }
             else
             {
-                userDesignation=emp.getEmpDesg();
+                userDesignation=emp.getJobTitle();
                 Employee employee=empRepo.findByEmpId(eid);
-                Integer parentId=emp.getParentId();
+                Integer parentId=emp.getManagerId();
 
                 if(userDesignation!=null)
                 {
                     if (!isDesignationValid(userDesignation))
-                        return new ResponseEntity("Designation does't exists! Please enter valid designation",HttpStatus.BAD_REQUEST);
+                        return new ResponseEntity<>(messageUtil.getMessage("INVALID_DESIGNATION"),HttpStatus.BAD_REQUEST);
                     else
                     {
                         if(isGreaterThanChilds(eid,userDesignation) && isSmallerThanParent(eid,userDesignation))
@@ -359,22 +274,22 @@ public class EmployeeService extends EmployeeUtil
                         }
                         else
                         {
-                            return new ResponseEntity(employee.getDesignation().getDesgName()+" cannot be replaced with "+userDesignation,HttpStatus.FORBIDDEN);
+                            return new ResponseEntity<>(messageUtil.getMessage("INVALID_PARENT"),HttpStatus.BAD_REQUEST);
                         }
                     }
                 }
-                if(emp.getEmpName()!=null)
+                if(emp.getName()!=null)
                 {
-                    if(emp.getEmpName().trim().equals(""))
+                    if(emp.getName().trim().equals(""))
                     {
-                        return new ResponseEntity("Name Cannot be Blank",HttpStatus.BAD_REQUEST);
+                        return new ResponseEntity<>(messageUtil.getMessage("BLANK_NAME"),HttpStatus.BAD_REQUEST);
                     }
                 }
 
                 if(parentId!=null)
                 {
                     if(!userExists(parentId))
-                        return new ResponseEntity("Parent does't Exists",HttpStatus.BAD_REQUEST);
+                        return new ResponseEntity<>(messageUtil.getMessage("PARENT_NOT_EXISTS"),HttpStatus.BAD_REQUEST);
                     else {
                         if(isGreaterThanCurrentDesignation(eid,empRepo.findByEmpId(parentId).getDesgName()))
                         {
@@ -382,23 +297,24 @@ public class EmployeeService extends EmployeeUtil
                         }
                         else
                         {
-                            return new ResponseEntity("Invalid ParentId",HttpStatus.BAD_REQUEST);
+                            return new ResponseEntity<>(messageUtil.getMessage("INVALID_PARENT"),HttpStatus.BAD_REQUEST);
                         }
                     }
                 }
 
-                if(emp.getEmpName()!=null)
+                if(emp.getName()!=null)
                 {
-                    employee.setEmpName(emp.getEmpName());
+                    employee.setEmpName(emp.getName());
                 }
                 empRepo.save(employee);
-                return new ResponseEntity("User Updated",HttpStatus.OK);
+//                return new ResponseEntity<>(employee,HttpStatus.OK);
+                return getUserDetails(eid);
             }
         }
         //User does't Exists
         else
         {
-            return new ResponseEntity("User does't Exists",HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(messageUtil.getMessage("EMP_NOT_EXISTS"),HttpStatus.BAD_REQUEST);
         }
 
     }

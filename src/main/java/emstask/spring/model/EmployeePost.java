@@ -1,41 +1,46 @@
 package emstask.spring.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class EmployeePost
 {
-    String empName=null;
-    String empDesg=null;
-    Integer parentId=null;
+    @JsonProperty("name")
+    String name =null;
+    @JsonProperty("jobTitle")
+    String jobTitle =null;
+    @JsonProperty("managerId")
+    Integer managerId=null;
 
     public EmployeePost(){}
-    public String getEmpName()
+    public String getName()
     {
-        return empName;
+        return name;
     }
 
-    public void setEmpName(String empName) {
-        this.empName = empName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getEmpDesg() {
-        return empDesg;
+    public String getJobTitle() {
+        return jobTitle;
     }
 
-    public void setEmpDesg(String empDesg) {
-        this.empDesg = empDesg;
+    public void setJobTitle(String jobTitle) {
+        this.jobTitle = jobTitle;
     }
 
-    public Integer getParentId() {
-        return parentId;
+    public Integer getManagerId() {
+        return managerId;
     }
 
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
+    public void setManagerId(Integer managerId) {
+        this.managerId = managerId;
     }
 
-    public EmployeePost(String empName, String empDesg, Integer parentId) {
-        this.empName = empName;
-        this.empDesg = empDesg;
-        this.parentId = parentId;
+    public EmployeePost(String name, String jobTitle, Integer managerId) {
+        this.name = name;
+        this.jobTitle = jobTitle;
+        this.managerId = managerId;
     }
 }
 
