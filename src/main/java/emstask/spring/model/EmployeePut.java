@@ -1,7 +1,4 @@
 package emstask.spring.model;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class EmployeePut
 {
     public EmployeePut()

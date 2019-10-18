@@ -11,10 +11,11 @@ import java.util.List;
 public class EmployeeUtil
 {
     @Autowired
-    EmployeeRepository empRepo;
+    public EmployeeRepository empRepo;
     @Autowired
-    DesignationRepository degRepo;
+    public DesignationRepository degRepo;
 
+    // verifying entered designation is greater or equal to current designation of employee
     public boolean isGreaterThanEqualCurrentDesignation(Integer eid,String desg)
     {
         Employee employee=empRepo.findByEmpId(eid);
@@ -26,6 +27,7 @@ public class EmployeeUtil
             return false;
     }
 
+    // verifying entered designation is not greater than its Manager designation
     public boolean isSmallerThanParent(Integer eid,String desg)
     {
         Employee employee=empRepo.findByEmpId(eid);
@@ -42,6 +44,7 @@ public class EmployeeUtil
             return true;
     }
 
+    // verifying entered designation is not smaller than its subordinate designation
     public boolean isGreaterThanChilds(Integer eid,String desg)
     {
         float selfLevel=degRepo.findByDesgName(desg).getLevel();
@@ -59,6 +62,8 @@ public class EmployeeUtil
             return true;
         }
     }
+
+    //verifying entered designation is greater than current designation of employee
     public boolean isGreaterThanCurrentDesignation(Integer eid,String desg)
     {
         Employee employee=empRepo.findByEmpId(eid);
@@ -70,6 +75,7 @@ public class EmployeeUtil
             return false;
     }
 
+    // Verifying any user exists in database or not for enter Id
     public boolean userExists(Integer eid)
     {
         Employee emp=empRepo.findByEmpId(eid);
@@ -81,6 +87,7 @@ public class EmployeeUtil
         }
     }
 
+    // Verifying is there any record in database exists for enter query
     public boolean hasData(List<Employee> list)
     {
         if(list.size()>0)
@@ -89,6 +96,7 @@ public class EmployeeUtil
             return false;
     }
 
+    // Verifying does entered designation exists in database
     public boolean isDesignationValid(String desg)
     {
         Designation designation=degRepo.findByDesgName(desg);
@@ -98,6 +106,7 @@ public class EmployeeUtil
             return false;
     }
 
+    // Verifying does name is empty or having permitted Regression
     public boolean isValidName(String name)
     {
         if(name!=null)
@@ -122,6 +131,7 @@ public class EmployeeUtil
 
     }
 
+    //Verying does entered id is not have any invalid Id like negative values
     public boolean isValidId(Integer id)
     {
         if(id.intValue()<0)

@@ -1,14 +1,10 @@
 package emstask.spring.controller;
-
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import emstask.spring.dao.DesignationRepository;
 import emstask.spring.dao.EmployeeRepository;
 import emstask.spring.model.EmployeePost;
 import emstask.spring.model.EmployeePut;
 import emstask.spring.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +34,8 @@ public class EmployeeController
     }
 
     @GetMapping("/employees/{aid}")
-    public ResponseEntity getEmployee(@PathVariable("aid") Integer aid) throws JsonProcessingException {
+    public ResponseEntity getEmployee(@PathVariable("aid") Integer aid)
+    {
        return empService.getUserDetails(aid);
     }
 

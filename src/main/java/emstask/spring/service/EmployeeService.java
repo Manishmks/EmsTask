@@ -1,7 +1,5 @@
 package emstask.spring.service;
 
-import emstask.spring.dao.DesignationRepository;
-import emstask.spring.dao.EmployeeRepository;
 import emstask.spring.model.*;
 import emstask.spring.util.EmployeeUtil;
 import emstask.spring.util.MessageUtil;
@@ -16,11 +14,6 @@ import java.util.Map;
 @Service
 public class EmployeeService extends EmployeeUtil
 {
-    @Autowired
-    EmployeeRepository empRepo;
-    @Autowired
-    DesignationRepository degRepo;
-
     @Autowired
     MessageUtil messageUtil;
 
@@ -198,7 +191,7 @@ public class EmployeeService extends EmployeeUtil
         }
     }
 
-    public ResponseEntity updateUser(int eid, EmployeePut emp) throws Exception
+    public ResponseEntity updateUser(int eid, EmployeePut emp)
     {
         if(eid<0)
         {

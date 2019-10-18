@@ -1,6 +1,5 @@
 package emstask.spring.config;
 
-import io.swagger.annotations.Api;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.PathSelectors;
@@ -29,14 +28,12 @@ public class SwaggerConfig
 
     private ApiInfo metaInfo()
     {
-        ApiInfo info=new ApiInfo(
+        return new ApiInfo(
                 "EMS Spring Project",
                 "EMS API to access and Manipulate data",
                 "1.0",
                 "Terms of service",
                 new Contact("Manish Sharma", "manishksharma@fico.com", "manishmks11496@gmail.com"),
                 "License of API", "API license URL", Collections.emptyList());
-
-        return info;
     }
 }
