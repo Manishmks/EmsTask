@@ -257,7 +257,7 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
         for(int i=10;i>0;i--)
         {
             mvc.perform(MockMvcRequestBuilders.delete("/rest/employees/"+i))
-                    .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+                    .andExpect(MockMvcResultMatchers.status().isNoContent()).andReturn();
         }
 
     }
@@ -271,7 +271,7 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employee);
         mvc.perform(MockMvcRequestBuilders.put("/rest/employees/13").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.status().isNotFound()).andReturn();
+                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
     }
     @Test
     public void updateEmpNoData() throws Exception
@@ -280,7 +280,7 @@ public class EmployeeControllerTest extends AbstractTransactionalTestNGSpringCon
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(employee);
         mvc.perform(MockMvcRequestBuilders.put("/rest/employees/2").content(jsonInput).contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
     }
     @Test
     public void updateEmpInvalidParId() throws Exception

@@ -5,6 +5,8 @@ import emstask.spring.dao.EmployeeRepository;
 import emstask.spring.model.Designation;
 import emstask.spring.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -142,4 +144,16 @@ public class EmployeeUtil
         return true;
     }
 
+    //Verifying either enter data is empty or not
+    public boolean haveData(String empName,String desg,Integer parentId)
+    {
+        if(empName==null && desg==null && parentId==null)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
 }
