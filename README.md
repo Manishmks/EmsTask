@@ -76,101 +76,56 @@ GET /rest/employee
 Response
 ```json
 [
-   {
-      "id":1,
-      "name":"Thor",
-      "jobTitle":"Director",
-      "subordinates":[
-         {
-            "id":4,
-            "name":"Captain America",
-            "jobTitle":"Manager"
-         },
-         {
-            "id":2,
-            "name":"Iron Man",
-            "jobTitle":"Manager"
-         },
-         {
-            "id":3,
-            "name":"Hulk",
-            "jobTitle":"Lead"
-         }
-      ]
-   },
-   {
-      "id":4,
-      "name":"Captain America",
-      "jobTitle":"Manager",
-      "manager":{
-         "id":1,
-         "name":"Thor",
-         "jobTitle":"Director"
-      },
-      "colleagues":[
-         {
-            "id":2,
-            "name":"Iron Man",
-            "jobTitle":"Manager"
-         },
-         {
-            "id":3,
-            "name":"Hulk",
-            "jobTitle":"Lead"
-         }
-      ],
-      "subordinates":[
-         {
-            "id":8,
-            "name":"Ant Man",
-            "jobTitle":"Lead"
-         },
-         {
-            "id":7,
-            "name":"Falcon",
-            "jobTitle":"Developer"
-         }
-      ]
-   },
-   {
-      "id":2,
-      "name":"Iron Man",
-      "jobTitle":"Manager",
-      "manager":{
-         "id":1,
-         "name":"Thor",
-         "jobTitle":"Director"
-      },
-      "colleagues":[
-         {
-            "id":4,
-            "name":"Captain America",
-            "jobTitle":"Manager"
-         },
-         {
-            "id":3,
-            "name":"Hulk",
-            "jobTitle":"Lead"
-         }
-      ],
-      "subordinates":[
-         {
-            "id":6,
-            "name":"Vision",
-            "jobTitle":"DevOps"
-         },
-         {
-            "id":5,
-            "name":"War Machine",
-            "jobTitle":"QA"
-         },
-         {
-            "id":9,
-            "name":"Spider Man",
-            "jobTitle":"Intern"
-         }
-      ]
-   }
+  {
+    "id": 1,
+    "jobTitle": "Director",
+    "name": "THOR"
+  },
+  {
+    "id": 4,
+    "jobTitle": "Manager",
+    "name": "CAPTAINAMERICA"
+  },
+  {
+    "id": 2,
+    "jobTitle": "Manager",
+    "name": "IRONMAN"
+  },
+  {
+    "id": 10,
+    "jobTitle": "Lead",
+    "name": "ANTMAN"
+  },
+  {
+    "id": 3,
+    "jobTitle": "Lead",
+    "name": "HULK"
+  },
+  {
+    "id": 8,
+    "jobTitle": "Developer",
+    "name": "BLACKWIDOW"
+  },
+  {
+    "id": 9,
+    "jobTitle": "Developer",
+    "name": "FALCON"
+  },
+  {
+    "id": 6,
+    "jobTitle": "DevOps",
+    "name": "VISION"
+  },
+  {
+    "id": 5,
+    "jobTitle": "QA",
+    "name": "WARMACHINE"
+  },
+  {
+    "id": 7,
+    "jobTitle": "Intern",
+    "name": "SPIDERMAN"
+  }
 ]
 ```
 
