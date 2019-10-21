@@ -1,6 +1,11 @@
 # EMS
+
 A Spring Boot project for Employee Management System
+
 ## Table of Contents
+- [Validation Script](#validation-script)
+- [Docker](#docker)
+- [Kubernetes](#kubernetes)
 - [Database](#database)
     - [Designation](#designation)
     - [Employee](#employee)
@@ -8,19 +13,24 @@ A Spring Boot project for Employee Management System
     - [Designation](#designation)
     - [Employee](#employee)
 - [API](#api)
-    
+
 ## Database
+
 #### Designation
 - id: Integer (Primary Key)
 - level: Float
 - title: String
+
 #### Employee
 - id: Integer (Primary Key)
 - name: String
-- manager: Integer
+- manager: Employee (Reference)
 - designation: Designation (Reference)
+
 ### Example Data
+
 Designation
+
 | id  | level | title     |
 | --- | ----- | --------- |
 | 1   | 1     | Director  |
@@ -30,7 +40,9 @@ Designation
 | 5   | 4     | DevOps    | 
 | 6   | 4     | QA        |
 | 7   | 5     | Intern    |
+
 Employee
+
 | id  | name            | manager | designation   |
 | --- | --------------- | ------- | ------------- |
 | 1   | Thor            | null    | 1 (Director)  |
@@ -43,85 +55,129 @@ Employee
 | 8   | Ant Man         | 4       | 3 (Lead)      |
 | 9   | Spider Man      | 2       | 7 (Intern)    |
 | 10  | Black kWidow    | 3       | 4 (Developer) |
+
 ## API
+
 #### Error Codes
 - 200: OK
 - 404: Resource Not Found
 - 405: Method Not Allowed
 - 406: Not Acceptable
-#### GET /employees
+
+#### GET /employee
+
 Returns list of all employees
+
 Request
 ```
-GET /rest/employees
+GET /employee
 ```
+
 Response
 ```json
 [
-  {
-    "id": 1,
-    "jobTitle": "Director",
-    "managerId": null,
-    "name": "THOR"
-  },
-  {
-    "id": 4,
-    "jobTitle": "Manager",
-    "managerId": 1,
-    "name": "CAPTAINAMERICA"
-  },
-  {
-    "id": 2,
-    "jobTitle": "Manager",
-    "managerId": 1,
-    "name": "IRONMAN"
-  },
-  {
-    "id": 10,
-    "jobTitle": "Lead",
-    "managerId": 4,
-    "name": "ANTMAN"
-  },
-  {
-    "id": 3,
-    "jobTitle": "Lead",
-    "managerId": 1,
-    "name": "HULK"
-  },
-  {
-    "id": 8,
-    "jobTitle": "Developer",
-    "managerId": 3,
-    "name": "BLACKWIDOW"
-  },
-  {
-    "id": 9,
-    "jobTitle": "Developer",
-    "managerId": 4,
-    "name": "FALCON"
-  },
-  {
-    "id": 6,
-    "jobTitle": "DevOps",
-    "managerId": 2,
-    "name": "VISION"
-  },
-  {
-    "id": 5,
-    "jobTitle": "QA",
-    "managerId": 2,
-    "name": "WARMACHINE"
-  },
-  {
-    "id": 7,
-    "jobTitle": "Intern",
-    "managerId": 2,
-    "name": "SPIDERMAN"
-  }
+   {
+      "id":1,
+      "name":"Thor",
+      "jobTitle":"Director",
+      "subordinates":[
+         {
+            "id":4,
+            "name":"Captain America",
+            "jobTitle":"Manager"
+         },
+         {
+            "id":2,
+            "name":"Iron Man",
+            "jobTitle":"Manager"
+         },
+         {
+            "id":3,
+            "name":"Hulk",
+            "jobTitle":"Lead"
+         }
+      ]
+   },
+   {
+      "id":4,
+      "name":"Captain America",
+      "jobTitle":"Manager",
+      "manager":{
+         "id":1,
+         "name":"Thor",
+         "jobTitle":"Director"
+      },
+      "colleagues":[
+         {
+            "id":2,
+            "name":"Iron Man",
+            "jobTitle":"Manager"
+         },
+         {
+            "id":3,
+            "name":"Hulk",
+            "jobTitle":"Lead"
+         }
+      ],
+      "subordinates":[
+         {
+            "id":8,
+            "name":"Ant Man",
+            "jobTitle":"Lead"
+         },
+         {
+            "id":7,
+            "name":"Falcon",
+            "jobTitle":"Developer"
+         }
+      ]
+   },
+   {
+      "id":2,
+      "name":"Iron Man",
+      "jobTitle":"Manager",
+      "manager":{
+         "id":1,
+         "name":"Thor",
+         "jobTitle":"Director"
+      },
+      "colleagues":[
+         {
+            "id":4,
+            "name":"Captain America",
+            "jobTitle":"Manager"
+         },
+         {
+            "id":3,
+            "name":"Hulk",
+            "jobTitle":"Lead"
+         }
+      ],
+      "subordinates":[
+         {
+            "id":6,
+            "name":"Vision",
+            "jobTitle":"DevOps"
+         },
+         {
+            "id":5,
+            "name":"War Machine",
+            "jobTitle":"QA"
+         },
+         {
+            "id":9,
+            "name":"Spider Man",
+            "jobTitle":"Intern"
+         }
+      ]
+   }
 ]
 ```
-### POST /employees
+
+### POST /employee
+
 Add a new employee
+
 Body
 ```json
 {
@@ -130,16 +186,19 @@ Body
   "managerId": "Integer Optional - Manager Employee ID, Required if current employee is not Director"
 }
 ```
+
 Request
 ```
-POST /rest/employee
+POST /employee
 body: {
     "name": "Dr Strange",
     "jobTitle": "Manager",
     "managerId": 1
 }
 ```
+
 Response
+
 ```json
 {
     "id": 11,
@@ -169,65 +228,63 @@ Response
     ]
 }
 ```
+
 ### GET employee/{id}
+
 Returns info of specific employee according to ID
+
 Request
 ```
-GET /rest/employee/2
+GET /employee/2
 ```
+
 Response
 ```json
 {
-  "employee": {
-    "id": 2,
-    "jobTitle": "Manager",
-    "managerId": 1,
-    "name": "IRONMAN"
-  },
+  "id": 2,
+  "name": "IronMan",
+  "jobTitle": "Manager",
   "manager": {
     "id": 1,
-    "jobTitle": "Director",
-    "managerId": null,
-    "name": "THOR"
+    "name": "Thor",
+    "jobTitle": "Director"         
   },
   "colleagues": [
     {
-      "id": 4,
-      "jobTitle": "Manager",
-      "managerId": 1,
-      "name": "CAPTAINAMERICA"
+      "id":4,
+      "name":"Captain America",
+      "jobTitle":"Manager"
     },
     {
-      "id": 3,
-      "jobTitle": "Lead",
-      "managerId": 1,
-      "name": "HULK"
+      "id":3,
+      "name":"Hulk",
+      "jobTitle":"Lead"
     }
   ],
   "subordinates": [
     {
-      "id": 6,
-      "jobTitle": "DevOps",
-      "managerId": 2,
-      "name": "VISION"
+      "id":6,
+      "name":"Vision",
+      "jobTitle":"DevOps"
     },
     {
-      "id": 5,
-      "jobTitle": "QA",
-      "managerId": 2,
-      "name": "WARMACHINE"
+      "id":5,
+      "name":"War Machine",
+      "jobTitle":"QA"
     },
     {
-      "id": 7,
-      "jobTitle": "Intern",
-      "managerId": 2,
-      "name": "SPIDERMAN"
+      "id":9,
+      "name":"Spider Man",
+      "jobTitle":"Intern"
     }
   ]
 }
 ```
+
 #### PUT /employee/${id}
+
 Update or replace employee by ID
+
 Body
 ```json
 {
@@ -237,9 +294,10 @@ Body
   "replace": "Boolean Optional - Replace old employee with current employee"
 }
 ```
+
 Request
 ```
-PUT /rest/employee/3
+PUT /employee/3
 body: {
     "name": "Black Panther",
     "jobTitle": "Lead",
@@ -247,6 +305,7 @@ body: {
     "replace": true
 }
 ```
+
 Response
 ```json
 {
@@ -279,13 +338,67 @@ Response
     ]
 }
 ```
+
 ### DELETE /employee/${id}
+
 Delete employee by ID
+
 Request
 ```
-DELETE /rest/employee/10
+DELETE /employee/10
 ```
+
 Response
 ```
 OK
+```
+
+### GET /designation
+
+Get all designations
+
+Request
+```
+GET /designation
+```
+
+Response
+```json
+[
+    {
+        "id": 6,
+        "title": "Director",
+        "level": 1.0
+    },
+    {
+        "id": 8,
+        "title": "Manager",
+        "level": 2.0
+    },
+    {
+        "id": 15,
+        "title": "Lead",
+        "level": 3.0
+    },
+    {
+        "id": 16,
+        "title": "Developer",
+        "level": 4.0
+    },
+    {
+        "id": 17,
+        "title": "DevOps",
+        "level": 4.0
+    },
+    {
+        "id": 20,
+        "title": "QA",
+        "level": 4.0
+    },
+    {
+        "id": 21,
+        "title": "Intern",
+        "level": 5.0
+    }
+]
 ```
