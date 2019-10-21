@@ -1,4 +1,4 @@
-# EMS
+# Employee Management System
 
 A Spring Boot project for Employee Management System
 
@@ -64,13 +64,13 @@ Employee
 - 405: Method Not Allowed
 - 406: Not Acceptable
 
-#### GET /employee
+#### GET /rest/employee
 
 Returns list of all employees
 
 Request
 ```
-GET /employee
+GET /rest/employee
 ```
 
 Response
@@ -174,7 +174,7 @@ Response
 ]
 ```
 
-### POST /employee
+### POST /rest/employee
 
 Add a new employee
 
@@ -189,7 +189,7 @@ Body
 
 Request
 ```
-POST /employee
+POST /rest/employee
 body: {
     "name": "Dr Strange",
     "jobTitle": "Manager",
@@ -229,13 +229,13 @@ Response
 }
 ```
 
-### GET employee/{id}
+### GET /rest/employee/{id}
 
 Returns info of specific employee according to ID
 
 Request
 ```
-GET /employee/2
+GET /rest/employee/2
 ```
 
 Response
@@ -281,7 +281,7 @@ Response
 }
 ```
 
-#### PUT /employee/${id}
+#### PUT /rest/employee/${id}
 
 Update or replace employee by ID
 
@@ -297,7 +297,7 @@ Body
 
 Request
 ```
-PUT /employee/3
+PUT /rest/employee/3
 body: {
     "name": "Black Panther",
     "jobTitle": "Lead",
@@ -339,66 +339,16 @@ Response
 }
 ```
 
-### DELETE /employee/${id}
+### DELETE /rest/employee/${id}
 
 Delete employee by ID
 
 Request
 ```
-DELETE /employee/10
+DELETE /rest/employee/10
 ```
 
 Response
 ```
 OK
-```
-
-### GET /designation
-
-Get all designations
-
-Request
-```
-GET /designation
-```
-
-Response
-```json
-[
-    {
-        "id": 6,
-        "title": "Director",
-        "level": 1.0
-    },
-    {
-        "id": 8,
-        "title": "Manager",
-        "level": 2.0
-    },
-    {
-        "id": 15,
-        "title": "Lead",
-        "level": 3.0
-    },
-    {
-        "id": 16,
-        "title": "Developer",
-        "level": 4.0
-    },
-    {
-        "id": 17,
-        "title": "DevOps",
-        "level": 4.0
-    },
-    {
-        "id": 20,
-        "title": "QA",
-        "level": 4.0
-    },
-    {
-        "id": 21,
-        "title": "Intern",
-        "level": 5.0
-    }
-]
 ```
