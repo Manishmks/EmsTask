@@ -3,9 +3,6 @@
 A Spring Boot project for Employee Management System
 
 ## Table of Contents
-- [Validation Script](#validation-script)
-- [Docker](#docker)
-- [Kubernetes](#kubernetes)
 - [Database](#database)
     - [Designation](#designation)
     - [Employee](#employee)
@@ -24,7 +21,7 @@ A Spring Boot project for Employee Management System
 #### Employee
 - id: Integer (Primary Key)
 - name: String
-- manager: Employee (Reference)
+- manager: Employee (Integer)
 - designation: Designation (Reference)
 
 ### Example Data
